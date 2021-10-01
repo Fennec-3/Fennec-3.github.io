@@ -1,4 +1,4 @@
-// Space Tag
+// Space Ship
 // Arman Borhan
 // 9/28/2021
 //
@@ -6,9 +6,18 @@
 // - I made it so you can change the ships color with the mouse wheel
 
 
-let x, y, theta, colour;
+let x, y, theta, colour, asteroid;
 let speed = 3;
 let backColour = 0;
+let bx = width;
+let by = height/2;
+let dx = 15;
+let dy = 10;
+let radius = 30;
+
+function preload() {
+  asteroid = loadImage("assets/asteroid.png");
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -24,6 +33,9 @@ function draw() {
   moveShip();
   boarder();
   displayShip();
+
+  displayAsteroid();
+  asteroidBounce();
 }
 
 // This is how the ship is controled
@@ -47,11 +59,16 @@ function moveShip() {
   }
 }
 
-// Boarder to stop ship from going out of bounds
+// Boarder to detect when ship crosses bounds
 function boarder() {
-  if (x < 0 || y < 0 || x > width || y > height) {
-    // add "you died" text here
-    noLoop();
+  if (x > width) {
+    x = 0;
+  } else if (x < 0) {
+    x = 5;
+  } else if (y < 0) {
+    y = height - 5;
+  } else if (y > height) {
+    y = 5;
   }
 }
 
@@ -77,10 +94,31 @@ function mouseClicked() {
   }
 }
 
-function keyPressed() {
-  if (key === 13) {
-    x = width/3;
-    y = height/3;
-    loop();
+// function keyPressed() {
+//   if (key === 13) {
+//     x = 10;
+//     y = height/2;
+//   }
+// }
+
+// all asteroid code below this
+function displayAsteroid() {
+  imageMode(CENTER);
+  image(asteroid, bx, by);
+
+  noStroke();
+  noFill();
+  circle(bx, by, radius*2);
+}
+
+function asteroidBounce() {
+  bx += dx;
+  by += dy;
+  
+  if (bx + radius >= width || bx - radius <= 0) {
+    dx = -dx;
+  } 
+  if (by + radius >= width || by - radius <= 0) {
+    dy = -dy;
   }
 }
