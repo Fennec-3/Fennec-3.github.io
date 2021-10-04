@@ -15,16 +15,12 @@ let dx = 15;
 let dy = 10;
 let radius = 30;
 
-function preload() {
-  asteroid = loadImage("assets/asteroid.png");
-}
-
 function setup() {
   createCanvas(windowWidth, windowHeight);
   colorMode(HSB, 360, 100, 100);
   angleMode(DEGREES);
-  x = width/3;
-  y = height/3;
+  x = 50;
+  y = height/2;
   theta = 0;
 }
 
@@ -36,6 +32,10 @@ function draw() {
 
   displayAsteroid();
   asteroidBounce();
+}
+
+function preload() {
+  asteroid = loadImage("assets/asteroid.png");
 }
 
 // This is how the ship is controled
@@ -104,7 +104,7 @@ function mouseClicked() {
 // all asteroid code below this
 function displayAsteroid() {
   imageMode(CENTER);
-  image(asteroid, bx, by);
+  image(asteroid, bx, by, radius*2, radius*2);
 
   noStroke();
   noFill();
