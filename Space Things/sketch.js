@@ -9,11 +9,15 @@
 let x, y, theta, colour, asteroid;
 let speed = 3;
 let backColour = 0;
-let bx = width;
-let by = height/2;
-let dx = 15;
-let dy = 10;
-let radius = 30;
+let dx = 10;
+let dy = 8;
+let radius = 40;
+let by;
+let bx;
+
+function preload() {
+  asteroid = loadImage("assets/asteroid.png");
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -22,6 +26,8 @@ function setup() {
   x = 50;
   y = height/2;
   theta = 0;
+  bx = width/2;
+  by = height/2;
 }
 
 function draw() {
@@ -32,11 +38,11 @@ function draw() {
 
   displayAsteroid();
   asteroidBounce();
+
+  console.log(bx, by);
 }
 
-function preload() {
-  asteroid = loadImage("assets/asteroid.png");
-}
+
 
 // This is how the ship is controled
 function moveShip() {
@@ -74,11 +80,13 @@ function boarder() {
 
 // Ships appearance and location
 function displayShip() {
+  push();
   fill(colour, 20, 100);
   noStroke();
   translate(x, y);
   rotate(theta);
   triangle(15,0,-30,15,-30,-15);
+  pop();
 }
 
 //randomizes ships color
@@ -118,7 +126,7 @@ function asteroidBounce() {
   if (bx + radius >= width || bx - radius <= 0) {
     dx = -dx;
   } 
-  if (by + radius >= width || by - radius <= 0) {
+  if (by + radius >= height || by - radius <= 0) {
     dy = -dy;
   }
 }
