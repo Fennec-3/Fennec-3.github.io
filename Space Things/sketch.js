@@ -1,6 +1,6 @@
 // Space Ship
 // Arman Borhan
-// 9/28/2021
+// 10/04/2021
 //
 // Extra for Experts:
 // - I made it so you can change the ships color with the mouse wheel
@@ -8,12 +8,14 @@
 
 let x, y, theta, colour, asteroid;
 let speed = 3;
+let score = 0;
 let backColour = 0;
 let dx = 10;
 let dy = 8;
 let radius = 40;
 let by;
 let bx;
+let isDead = false;
 
 function preload() {
   asteroid = loadImage("assets/asteroid.png");
@@ -38,14 +40,15 @@ function draw() {
 
   displayAsteroid();
   asteroidBounce();
-
-  console.log(bx, by);
+  asteroidHit();
 }
-
-
 
 // This is how the ship is controled
 function moveShip() {
+  if (isDead === true) { //if asteroid hits ship, the ship stops moving
+    speed = 0;
+  }
+
   if (keyIsDown(68)) { //d turns ship right
     theta += 5;
   }
@@ -65,19 +68,6 @@ function moveShip() {
   }
 }
 
-// Boarder to detect when ship crosses bounds
-function boarder() {
-  if (x > width) {
-    x = 0;
-  } else if (x < 0) {
-    x = 5;
-  } else if (y < 0) {
-    y = height - 5;
-  } else if (y > height) {
-    y = 5;
-  }
-}
-
 // Ships appearance and location
 function displayShip() {
   push();
@@ -89,7 +79,21 @@ function displayShip() {
   pop();
 }
 
-//randomizes ships color
+// Boarder to detect when ship crosses bounds
+function boarder() {
+  if (x > width) { //crossing right side sends ship to left
+    x = 0;         //and increases score by 1
+    score++;
+  } else if (x < 0) { //won't allow ship to cross left side
+    x = 5;
+  } else if (y < 0) { //crossing top sends ship to bottom
+    y = height - 5;
+  } else if (y > height) { //crossing bottom sends ship to top
+    y = 5;
+  }
+}
+
+//mouse wheel randomizes ships color
 function mouseWheel(event) {
   colour = random(1, 360);
 }
@@ -102,14 +106,7 @@ function mouseClicked() {
   }
 }
 
-// function keyPressed() {
-//   if (key === 13) {
-//     x = 10;
-//     y = height/2;
-//   }
-// }
-
-// all asteroid code below this
+//the asteroids looks and position
 function displayAsteroid() {
   imageMode(CENTER);
   image(asteroid, bx, by, radius*2, radius*2);
@@ -120,13 +117,30 @@ function displayAsteroid() {
 }
 
 function asteroidBounce() {
+  if (isDead === true) { //if ship is hit the asteroid stops moving
+    dx = 0;
+    dy = 0;
+    bx = width - (radius + 20);
+    by = radius + 20;
+  }
+
   bx += dx;
   by += dy;
-  
-  if (bx + radius >= width || bx - radius <= 0) {
+
+  if (bx + radius >= width || bx - radius <= 0) { //makes asteroid bounce off left/right walls
     dx = -dx;
   } 
-  if (by + radius >= height || by - radius <= 0) {
+  if (by + radius >= height || by - radius <= 0) { //makes asteroid bounce off top/bottom walls
     dy = -dy;
+  }
+}
+
+function asteroidHit() { //detects when ship has been hit by asteroid
+  let distFromAsteroid = dist(x, y, bx, by);
+
+  if (distFromAsteroid <= radius) { //displays a message to let you know that you failed
+    isDead = true;                  //and then restarts the game
+    alert("You died! Your score was: " + score);
+    location.reload();
   }
 }
