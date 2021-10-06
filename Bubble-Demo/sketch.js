@@ -20,6 +20,7 @@ function spawnBubble() {
     dx: 0,
     dy: -3,
     theColor: color(random(255), random(255), random(255), random(255)),
+    theTime: random(1000),
   };
   theBubbles.push(bubble);
 }
@@ -36,8 +37,8 @@ function bubbleUp() {
   for (let bubble of theBubbles) {
     bubble.y += bubble.dy;
 
-    //jitter side to side
-    bubble.x += random(-5, 5);
+    bubble.x = noise(bubble.theTime) * width;
+    bubble.theTime += 0.005;
   }
 }
 
