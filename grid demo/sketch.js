@@ -2,6 +2,11 @@
 
 let gridSize = 50;
 let grid;
+let clickSound;
+
+function preload() {
+  clickSound = loadSound("assets/Bruh_Sound_Effect_345.mp3")
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -14,6 +19,8 @@ function draw() {
 }
 
 function mousePressed() {
+  clickSound.play();
+
   let cellWidth = width/gridSize;
   let cellHeight = height/gridSize;
 
@@ -50,12 +57,12 @@ function createEmpty2DArray(rows, cols) {
   for (let y=0; y<rows; y++) {
     grid.push([]);
     for (let x=0; x<cols; x++) {
-      // if (random(100) < 50) {
-      //   grid[y].push(0);
-      // } else {
-      //   grid[y].push(1);
-      // }
-      grid[y].push(0);
+      if (random(100) < 50) {
+        grid[y].push(0);
+      } else {
+        grid[y].push(1);
+      }
+      // grid[y].push(0);
     }
   }
   return grid;
