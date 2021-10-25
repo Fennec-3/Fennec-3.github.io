@@ -1,5 +1,5 @@
-// Project Title
-// Your Name
+// Grid Based Game (Minesweeper)
+// Arman Borhan
 // Date
 //
 // Extra for Experts:
@@ -8,6 +8,7 @@
 let array;
 let sqWidth = 50;
 let numHeight, numWidth;
+let bombCount = 0;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -28,7 +29,12 @@ function createGrid(numHeight, numWidth) {
   for (let y=0; y<numHeight; y++) {
     board.push([]);
     for (let x=0; x<numWidth; x++) {
-      board[y].push(0);
+        if (bombCount <= floor((numHeight*numWidth)/10)) {
+          board[y].push(floor(random(10)));
+          if (board[y][x] === 2) {
+            bombCount++;
+        }
+      }
     }
   }
   return board;
@@ -37,10 +43,12 @@ function createGrid(numHeight, numWidth) {
 function displayArray() {
   for (let y=0; y<numHeight; y++) {
     for (let x=0; x<numWidth; x++) {
-      if (array[y][x] === 0) {
+      if (array[y][x] !== 2) {
        fill(220);
       } else if (array[y][x] === 1) {
         fill(255);
+      } else if (array[y][x] === 10) {
+        fill("red");
       }
       rect(x*sqWidth, y*sqWidth, sqWidth, sqWidth);
     }
@@ -51,7 +59,10 @@ function mousePressed() {
   let sqX = floor(mouseX/sqWidth);
   let sqY = floor(mouseY/sqWidth);
 
-  if (array[sqY][sqX] === 0) {
+  if (array[sqY][sqX] !== 2) { 
     array[sqY][sqX] = 1;
+  }
+  else if (array[sqY][sqX] === 2) {
+    array[sqY][sqX] = 10; //activated bomb
   }
 }
