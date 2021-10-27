@@ -6,7 +6,7 @@
 // - describe what you did to take this project "above and beyond"
 
 // To-Do: make it so the number of bombs = 10% of the squares on the grid,
-// auto fill, detonation sequence, make white tiles display number of nearby bombs
+// auto fill, detonation sequence, make white tiles display number of nearby bombs, first click safety
 
 let array;
 let sqWidth = 50;
@@ -57,6 +57,11 @@ function displayArray() {
         fill(220);
       }
       rect(x*sqWidth, y*sqWidth, sqWidth, sqWidth);
+      if (array[y][x] !== 2) {
+        let nearBombs = 0;
+
+        //if statements checking around it
+      }
     }
   }
 }
