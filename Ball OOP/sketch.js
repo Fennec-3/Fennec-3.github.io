@@ -9,7 +9,7 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  for (let i=0; i<10; i++) {
+  for (let i=0; i<100; i++) {
     let x = random(100, width-100);
     let y = random(100, height-100);
     let theBall = new Ball(x, y, theImage);
@@ -30,7 +30,7 @@ function draw() {
 }
 
 function mousePressed() {
-  for (let i=0; i<1000000; i++) {
+  for (let i=0; i<1000; i++) {
     let x = mouseX;
     let y = mouseY;
     let theBall = new Ball(x, y, theImage);
