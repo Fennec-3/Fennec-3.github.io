@@ -30,12 +30,20 @@ function draw() {
 }
 
 function mousePressed() {
-  for (let i=0; i<1000; i++) {
-    let x = mouseX;
-    let y = mouseY;
-    let theBall = new Ball(x, y, theImage);
-    ballArray.push(theBall);
+  for (let i=ballArray.length-1; i>=0; i--) {
+    if (ballArray[i].isPointInBall(mouseX, mouseY)) {
+      ballArray.splice(i, 1);
+    }
   }
+}
+
+function keyPressed() {
+  if (key === " ") {
+    for (let i=0; i<1000; i++) {
+      let theBall = new Ball(mouseX, mouseY, theImage);
+      ballArray.push(theBall);
+    }
+  }   
 }
 
 class Ball {
@@ -67,6 +75,16 @@ class Ball {
     }
     if (this.y + this.radius >= height || this.y - this.radius <= 0) {
       this.dy = -this.dy;
+    }
+  }
+
+  isPointInBall(x, y) {
+    if (dist(x, y, this.x, this.y) < this.radius) {
+      //inside ball
+      return true;
+    }
+    else {
+      return false;
     }
   }
 }

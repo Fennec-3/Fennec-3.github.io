@@ -14,7 +14,6 @@ let array;
 let sqWidth = 50;
 let numHeight, numWidth;
 let bombCount = 0;
-let nearBombs = 0;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -44,16 +43,21 @@ function createGrid(numHeight, numWidth) {
   for (let y=0; y<numHeight; y++) {
     board.push([]);
     for (let x=0; x<numWidth; x++) {
-      board[y].push(floor(random(2, 10)));
+      board[y].push(floor(random(1, 10)));
     }
-  } // Create grid2 (numbers)
+  }
+  for (let i=0; i<board.length; i++) {
+    for (let j=0; j<board[i].length; j++) {
+      board[i][j] = checkBombs(board, i, j);
+    }
+  }
   return board;
 }
 
 function displayArray() {
   for (let y=0; y<numHeight; y++) {
     for (let x=0; x<numWidth; x++) {
-      if (array[y][x] === 1) {
+      if (array[y][x] === 0) {
        fill(255);
       } else if (array[y][x] === 10) {
         fill("red");
@@ -69,11 +73,11 @@ function mousePressed() {
   let sqX = floor(mouseX/sqWidth);
   let sqY = floor(mouseY/sqWidth);
 
-  if (array[sqY][sqX] !== 2 && array[sqY][sqX] !== 10) { 
-    array[sqY][sqX] = 1;
-    displayText(sqX,sqY);
+  if (array[sqY][sqX] !== 9 && array[sqY][sqX] !== 10) { 
+    array[sqY][sqX] = 0;
+    // displayText(sqX,sqY); (worry abput it later)
   }
-  else if (array[sqY][sqX] === 2) {
+  else if (array[sqY][sqX] === 9) {
     array[sqY][sqX] = 10; //activated bomb
 
     //add detonation code here
@@ -81,17 +85,22 @@ function mousePressed() {
 }
 
 function displayText(sqX, sqY) {
-  nearBombs = 0;
-
-    for (let i=-1; i<2; i++) {
-      for (let j=-1; j<2; j++) {
-        if (array[sqY-i][sqX-j] === 2 || array[sqY-i][sqX-j] === 10) {
-          nearBombs++;
-        }
-      }
-    }
   fill("black");
   textSize(cellSize*0.75);
   textAlign(CENTER, CENTER);
   text(nearBombs, x*cellSize + cellSize/2, y*cellSize + cellSize/2);    
+}
+
+function checkBombs(board, y, x) {
+  let nearBombs = 0;
+
+  for (let i=-1; i<2; i++) {
+    for (let j=-1; j<2; j++) {
+      console.log(board[y-i][x-j]);
+      if (board[y-i][x-j] === 9 || board[y-i][x-j] === 10) {
+        nearBombs++;
+      }
+    }
+  }
+  return nearBombs;
 }
