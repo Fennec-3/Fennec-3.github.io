@@ -5,9 +5,10 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-// To-Do: make it so the number of bombs = 10% of the squares on the grid,
-// auto fill, detonation sequence, first click safety
-// make white tiles display number of nearby bombs (help needed)
+// To-Do: make it so the number of bombs = 10% of the squares on the grid // Done?
+
+// flood fill(3), detonation sequence(2), first click safety (4)(maybe)
+// make white tiles display number of nearby bombs (1)
 
 let array;
 let sqWidth = 50;
@@ -45,7 +46,7 @@ function createGrid(numHeight, numWidth) {
     for (let x=0; x<numWidth; x++) {
       board[y].push(floor(random(2, 10)));
     }
-  }
+  } // Create grid2 (numbers)
   return board;
 }
 
@@ -60,7 +61,7 @@ function displayArray() {
         fill(220);
       }
       rect(x*sqWidth, y*sqWidth, sqWidth, sqWidth);
-    }
+    } // display grid2
   }
 }
 
@@ -75,7 +76,7 @@ function mousePressed() {
   else if (array[sqY][sqX] === 2) {
     array[sqY][sqX] = 10; //activated bomb
 
-    //add lose code here
+    //add detonation code here
   }
 }
 
