@@ -46,6 +46,7 @@ function createGrid(numHeight, numWidth) {
       board[y].push(floor(random(1, 10)));
     }
   }
+  // let newBoard = createNewGrid(board);
   for (let i=0; i<board.length; i++) {
     for (let j=0; j<board[i].length; j++) {
       board[i][j] = checkBombs(board, i, j);
@@ -57,7 +58,7 @@ function createGrid(numHeight, numWidth) {
 function displayArray() {
   for (let y=0; y<numHeight; y++) {
     for (let x=0; x<numWidth; x++) {
-      if (array[y][x] === 0) {
+      if (array[y][x] > 10 || array[y][x] < 1) {
        fill(255);
       } else if (array[y][x] === 10) {
         fill("red");
@@ -94,10 +95,9 @@ function displayText(sqX, sqY) {
 function checkBombs(board, y, x) {
   let nearBombs = 0;
 
-  for (let i=-1; i<2; i++) {
-    for (let j=-1; j<2; j++) {
-      console.log(board[y-i][x-j]);
-      if (board[y-i][x-j] === 9 || board[y-i][x-j] === 10) {
+  for (let i=0; i<1; i++) {
+    for (let j=0; j<1; j++) {
+      if ((board[y-i][x-j] === 9 || board[y-i][x-j] === 10) || (board[y+i][x+j] === 9 || board[y+i][x+j] === 10) || (board[y-i][x+j] === 9 || board[y-i][x+j] === 10) || (board[y+i][x-j] === 9 || board[y+i][x-j] === 10)) {
         nearBombs++;
       }
     }
