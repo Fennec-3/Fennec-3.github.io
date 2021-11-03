@@ -7,10 +7,9 @@
 
 // To-Do: make it so the number of bombs = 10% of the squares on the grid // Done?
 
-// flood fill(3), detonation sequence(2), first click safety (4)(maybe)
-// make white tiles display number of nearby bombs (1)
+// flood fill(2), detonation sequence(1), first click safety (3)(maybe)
 
-let array;
+let array, newArray;
 let sqWidth = 50;
 let numHeight, numWidth;
 let bombCount = 0;
@@ -21,6 +20,7 @@ function setup() {
   numHeight = floor(height/sqWidth);
 
   array = createGrid(numHeight, numWidth);
+
   for (let i=0; i<array.length; i++) {
     for (let j=0; j<array[i].length; j++) {
       if (array[i][j] === 2) {
@@ -35,7 +35,6 @@ function setup() {
 function draw() {
   background(255);
   displayArray();
-  
 }
 
 function createGrid(numHeight, numWidth) {
@@ -46,19 +45,32 @@ function createGrid(numHeight, numWidth) {
       board[y].push(floor(random(1, 10)));
     }
   }
-  // let newBoard = createNewGrid(board);
-  for (let i=0; i<board.length; i++) {
-    for (let j=0; j<board[i].length; j++) {
-      board[i][j] = checkBombs(board, i, j);
+  newArray = createNewGrid(board);
+  console.log(newArray);
+  for (let i=0; i<newArray.length; i++) {
+    for (let j=0; j<newArray[i].length; j++) {
+      newArray[i][j] = checkBombs(board, i, j);
     }
   }
   return board;
 }
 
+function createNewGrid(array) {
+  let array2 = [];
+
+  for (let y=0; y<numHeight; y++) {
+    array2.push([]);
+    for (let x=0; x<numWidth; x++) {
+      array2[y].push(array[y][x]);
+    }
+  }
+  return array2;
+}
+
 function displayArray() {
   for (let y=0; y<numHeight; y++) {
     for (let x=0; x<numWidth; x++) {
-      if (array[y][x] > 10 || array[y][x] < 1) {
+      if (array[y][x] === 0) {
        fill(255);
       } else if (array[y][x] === 10) {
         fill("red");
@@ -66,7 +78,10 @@ function displayArray() {
         fill(220);
       }
       rect(x*sqWidth, y*sqWidth, sqWidth, sqWidth);
-    } // display grid2
+      if (array[y][x] === 0 && newArray[y][x] !== 0) {
+        displayText(y, x);
+      }
+    }
   }
 }
 
@@ -76,7 +91,7 @@ function mousePressed() {
 
   if (array[sqY][sqX] !== 9 && array[sqY][sqX] !== 10) { 
     array[sqY][sqX] = 0;
-    // displayText(sqX,sqY); (worry abput it later)
+    // newArray code and flood fill code go here
   }
   else if (array[sqY][sqX] === 9) {
     array[sqY][sqX] = 10; //activated bomb
@@ -85,22 +100,24 @@ function mousePressed() {
   }
 }
 
-function displayText(sqX, sqY) {
+function displayText(y, x) {
   fill("black");
-  textSize(cellSize*0.75);
+  textSize(sqWidth*0.5);
   textAlign(CENTER, CENTER);
-  text(nearBombs, x*cellSize + cellSize/2, y*cellSize + cellSize/2);    
+  text(newArray[y][x], x*sqWidth + sqWidth/2, y*sqWidth + sqWidth/2);    
 }
 
 function checkBombs(board, y, x) {
   let nearBombs = 0;
 
-  for (let i=0; i<1; i++) {
-    for (let j=0; j<1; j++) {
-      if ((board[y-i][x-j] === 9 || board[y-i][x-j] === 10) || (board[y+i][x+j] === 9 || board[y+i][x+j] === 10) || (board[y-i][x+j] === 9 || board[y-i][x+j] === 10) || (board[y+i][x-j] === 9 || board[y+i][x-j] === 10)) {
-        nearBombs++;
+    for (let i=-1; i<=1; i++) {
+      for (let j=-1; j<=1; j++) {
+        if (x-j >= 0 && x-j < numWidth && y-i >= 0 && y-i < numHeight) {
+          if (board[y-i][x-j] === 9 || board[y-i][x-j] === 10) {
+            nearBombs++;
+          }
+        }
       }
     }
-  }
   return nearBombs;
 }
