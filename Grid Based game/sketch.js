@@ -12,15 +12,17 @@
 let array, newArray;
 let sqWidth = 50;
 let numHeight, numWidth;
-let bombCount = 0;
+let bombCount, resetTimer, isDead;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  isDead = false;
   numWidth =  floor(width/sqWidth);
   numHeight = floor(height/sqWidth);
 
   array = createGrid(numHeight, numWidth);
 
+  bombCount = 0;
   for (let i=0; i<array.length; i++) {
     for (let j=0; j<array[i].length; j++) {
       if (array[i][j] === 2) {
@@ -29,12 +31,20 @@ function setup() {
     }
   }
   console.log(bombCount);
-  console.log(array);
 }
 
 function draw() {
   background(255);
   displayArray();
+  if (isDead === true) {
+    fill("black");
+    textAlign(CENTER, CENTER);
+    textSize(100);
+    text("You Died", width/2, height/2);
+    if (millis() > resetTimer + 5000) {
+      setup();
+    }
+  }
 }
 
 function createGrid(numHeight, numWidth) {
@@ -46,7 +56,6 @@ function createGrid(numHeight, numWidth) {
     }
   }
   newArray = createNewGrid(board);
-  console.log(newArray);
   for (let i=0; i<newArray.length; i++) {
     for (let j=0; j<newArray[i].length; j++) {
       newArray[i][j] = checkBombs(board, i, j);
@@ -91,12 +100,20 @@ function mousePressed() {
 
   if (array[sqY][sqX] !== 9 && array[sqY][sqX] !== 10) { 
     array[sqY][sqX] = 0;
-    // newArray code and flood fill code go here
+    //flood fill code goes here
   }
   else if (array[sqY][sqX] === 9) {
     array[sqY][sqX] = 10; //activated bomb
 
-    //add detonation code here
+    for (let i=0; i<array.length; i++) { //nested for loop will reveal all bomb locations
+      for (let j=0; j<array[i].length; j++) {
+        if (array[i][j] === 9) {
+          array[i][j] = 10;
+        }
+      }
+    }
+    isDead = true;
+    resetTimer = millis();
   }
 }
 
