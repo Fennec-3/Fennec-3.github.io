@@ -14,15 +14,14 @@ let sqWidth = 50;
 let numHeight, numWidth;
 let bombCount, resetTimer, isDead;
 
-function setup() {
+function setup() { //creates array, and sets all variables (setup is called when game resets)
   createCanvas(windowWidth, windowHeight);
   isDead = false;
   numWidth =  floor(width/sqWidth);
   numHeight = floor(height/sqWidth);
+  array = createGrid(numHeight, numWidth); 
 
-  array = createGrid(numHeight, numWidth);
-
-  bombCount = 0;
+  bombCount = 0; //counts how many bombs are in the array and displays in console
   for (let i=0; i<array.length; i++) {
     for (let j=0; j<array[i].length; j++) {
       if (array[i][j] === 2) {
@@ -36,12 +35,13 @@ function setup() {
 function draw() {
   background(255);
   displayArray();
-  if (isDead === true) {
+
+  if (isDead === true) { //once bomb has been activated this code lets players know they have lost
     fill("black");
     textAlign(CENTER, CENTER);
     textSize(100);
     text("You Died", width/2, height/2);
-    if (millis() > resetTimer + 5000) {
+    if (millis() > resetTimer + 5000) { //resets after 5 seconds
       setup();
     }
   }
@@ -49,13 +49,13 @@ function draw() {
 
 function createGrid(numHeight, numWidth) {
   let board = [];
-  for (let y=0; y<numHeight; y++) {
+  for (let y=0; y<numHeight; y++) { //creates array
     board.push([]);
     for (let x=0; x<numWidth; x++) {
-      board[y].push(floor(random(1, 10)));
+      board[y].push(floor(random(1, 10))); //randomizes tiles. dormant bombs = 9, activated bombs = 10, everything else is plain
     }
   }
-  newArray = createNewGrid(board);
+  newArray = createNewGrid(board); //stores nearbombs count in the replica array
   for (let i=0; i<newArray.length; i++) {
     for (let j=0; j<newArray[i].length; j++) {
       newArray[i][j] = checkBombs(board, i, j);
@@ -64,7 +64,7 @@ function createGrid(numHeight, numWidth) {
   return board;
 }
 
-function createNewGrid(array) {
+function createNewGrid(array) { //creates replica of array
   let array2 = [];
 
   for (let y=0; y<numHeight; y++) {
@@ -77,17 +77,17 @@ function createNewGrid(array) {
 }
 
 function displayArray() {
-  for (let y=0; y<numHeight; y++) {
+  for (let y=0; y<numHeight; y++) { //checks array colors mined spaces white, bombs red, and unmined spaces gray
     for (let x=0; x<numWidth; x++) {
-      if (array[y][x] === 0) {
+      if (array[y][x] === 0) { 
        fill(255);
-      } else if (array[y][x] === 10) {
+      } else if (array[y][x] === 10) { 
         fill("red");
       } else {
         fill(220);
       }
       rect(x*sqWidth, y*sqWidth, sqWidth, sqWidth);
-      if (array[y][x] === 0 && newArray[y][x] !== 0) {
+      if (array[y][x] === 0 && newArray[y][x] !== 0) { //displays grid and nearby bombs of mined tiles
         displayText(y, x);
       }
     }
@@ -98,14 +98,15 @@ function mousePressed() {
   let sqX = floor(mouseX/sqWidth);
   let sqY = floor(mouseY/sqWidth);
 
-  if (array[sqY][sqX] !== 9 && array[sqY][sqX] !== 10) { 
+  if (array[sqY][sqX] !== 9 && array[sqY][sqX] !== 10) { //mines spot if there are no mines
     array[sqY][sqX] = 0;
-    //flood fill code goes here
+    
+    floodFill(newArray, sqX, sqY); //flood fill
   }
   else if (array[sqY][sqX] === 9) {
-    array[sqY][sqX] = 10; //activated bomb
+    array[sqY][sqX] = 10; //activates bomb
 
-    for (let i=0; i<array.length; i++) { //nested for loop will reveal all bomb locations
+    for (let i=0; i<array.length; i++) { //nested for loop will reveal all bomb locations when bomb is activated
       for (let j=0; j<array[i].length; j++) {
         if (array[i][j] === 9) {
           array[i][j] = 10;
@@ -113,7 +114,7 @@ function mousePressed() {
       }
     }
     isDead = true;
-    resetTimer = millis();
+    resetTimer = millis(); //resets game after player dies
   }
 }
 
@@ -137,4 +138,8 @@ function checkBombs(board, y, x) {
       }
     }
   return nearBombs;
+}
+
+function floodFill(array, x, y) {
+  
 }
