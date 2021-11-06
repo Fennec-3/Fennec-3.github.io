@@ -145,14 +145,28 @@ function floodFill(floodArray, x, y) {
     for (let i=-1; i<=1; i++) {
       for (let j=-1; j<=1; j++) {
         if (x-j >= 0 && x-j < numWidth && y-i >= 0 && y-i < numHeight) {
-          if ((floodArray[y-i][x-j] !== 9 || floodArray[y-i][x-j] !== 10) ) {
+          if (floodArray[y-i][x-j] !== 9 || floodArray[y-i][x-j] !== 10) {
             floodArray[y-i][x-j] = 0;
-            
+            floodArray = flowFill(floodArray, x-j, y-i);
           }
         }
       }
     }
   }
-  
   return floodArray;
+}
+
+function flowFill(flowArray, x, y) {
+  if (newArray[y][x] === 0) {
+    for (let i=-1; i<=1; i++) {
+      for (let j=-1; j<=1; j++) {
+        if (x-j >= 0 && x-j < numWidth && y-i >= 0 && y-i < numHeight) {
+          if (flowArray[y-i][x-j] !== 9 || flowArray[y-i][x-j] !== 10) {
+            flowArray[y-i][x-j] = 0;
+          }
+        }
+      }
+    }
+  }
+  return flowArray;
 }
