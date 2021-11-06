@@ -84,7 +84,7 @@ function displayArray() {
       } else if (array[y][x] === 10) { 
         fill("red");
       } else {
-        fill(220);
+        fill("green");
       }
       rect(x*sqWidth, y*sqWidth, sqWidth, sqWidth);
       if (array[y][x] === 0 && newArray[y][x] !== 0) { //displays grid and nearby bombs of mined tiles
@@ -101,7 +101,7 @@ function mousePressed() {
   if (array[sqY][sqX] !== 9 && array[sqY][sqX] !== 10) { //mines spot if there are no mines
     array[sqY][sqX] = 0;
     
-    floodFill(newArray, sqX, sqY); //flood fill
+    array = floodFill(array, sqX, sqY); //flood fill
   }
   else if (array[sqY][sqX] === 9) {
     array[sqY][sqX] = 10; //activates bomb
@@ -118,7 +118,7 @@ function mousePressed() {
   }
 }
 
-function displayText(y, x) {
+function displayText(y, x) { //displays nearby bombs
   fill("black");
   textSize(sqWidth*0.5);
   textAlign(CENTER, CENTER);
@@ -140,6 +140,19 @@ function checkBombs(board, y, x) {
   return nearBombs;
 }
 
-function floodFill(array, x, y) {
+function floodFill(floodArray, x, y) {
+  if (newArray[y][x] === 0) {
+    for (let i=-1; i<=1; i++) {
+      for (let j=-1; j<=1; j++) {
+        if (x-j >= 0 && x-j < numWidth && y-i >= 0 && y-i < numHeight) {
+          if ((floodArray[y-i][x-j] !== 9 || floodArray[y-i][x-j] !== 10) ) {
+            floodArray[y-i][x-j] = 0;
+            
+          }
+        }
+      }
+    }
+  }
   
+  return floodArray;
 }
