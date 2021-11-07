@@ -1,15 +1,15 @@
 // Grid Based Game (Minesweeper)
 // Arman Borhan
-// Date
+// 2021-11-06
 //
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// - Attempted flood fill, not completed fully
 
 // To-Do: make it so the number of bombs = 10% of the squares on the grid // Done?
 
-// flood fill(2), detonation sequence(1), first click safety (3)(maybe)
+// flag/win condition(1), flood fill(2), first click safety (3)(maybe)
 
-let array, newArray;
+let array, neighborArray;
 let sqWidth = 50;
 let numHeight, numWidth;
 let bombCount, resetTimer, isDead;
@@ -55,10 +55,10 @@ function createGrid(numHeight, numWidth) {
       board[y].push(floor(random(1, 10))); //randomizes tiles. dormant bombs = 9, activated bombs = 10, everything else is plain
     }
   }
-  newArray = createNewGrid(board); //stores nearbombs count in the replica array
-  for (let i=0; i<newArray.length; i++) {
-    for (let j=0; j<newArray[i].length; j++) {
-      newArray[i][j] = checkBombs(board, i, j);
+  neighborArray = createNewGrid(board); //stores nearbombs count in the replica array
+  for (let i=0; i<neighborArray.length; i++) {
+    for (let j=0; j<neighborArray[i].length; j++) {
+      neighborArray[i][j] = checkBombs(board, i, j);
     }
   }
   return board;
@@ -87,7 +87,7 @@ function displayArray() {
         fill("green");
       }
       rect(x*sqWidth, y*sqWidth, sqWidth, sqWidth);
-      if (array[y][x] === 0 && newArray[y][x] !== 0) { //displays grid and nearby bombs of mined tiles
+      if (array[y][x] === 0 && neighborArray[y][x] !== 0) { //displays grid and nearby bombs of mined tiles
         displayText(y, x);
       }
     }
@@ -122,7 +122,7 @@ function displayText(y, x) { //displays nearby bombs
   fill("black");
   textSize(sqWidth*0.5);
   textAlign(CENTER, CENTER);
-  text(newArray[y][x], x*sqWidth + sqWidth/2, y*sqWidth + sqWidth/2);    
+  text(neighborArray[y][x], x*sqWidth + sqWidth/2, y*sqWidth + sqWidth/2);    
 }
 
 function checkBombs(board, y, x) {
@@ -141,13 +141,17 @@ function checkBombs(board, y, x) {
 }
 
 function floodFill(floodArray, x, y) {
-  if (newArray[y][x] === 0) {
+  if (neighborArray[y][x] === 0) {
     for (let i=-1; i<=1; i++) {
       for (let j=-1; j<=1; j++) {
         if (x-j >= 0 && x-j < numWidth && y-i >= 0 && y-i < numHeight) {
           if (floodArray[y-i][x-j] !== 9 || floodArray[y-i][x-j] !== 10) {
             floodArray[y-i][x-j] = 0;
-            floodArray = flowFill(floodArray, x-j, y-i);
+            for (let z=-6; z<6; z++) {
+              if (x-j-z >= 0 && x-j-z < numWidth && y-i-z >= 0 && y-i-z < numHeight) {
+                floodArray = flowFill(floodArray, x-j-z, y-i-z);
+              }
+            }
           }
         }
       }
@@ -157,7 +161,7 @@ function floodFill(floodArray, x, y) {
 }
 
 function flowFill(flowArray, x, y) {
-  if (newArray[y][x] === 0) {
+  if (neighborArray[y][x] === 0) {
     for (let i=-1; i<=1; i++) {
       for (let j=-1; j<=1; j++) {
         if (x-j >= 0 && x-j < numWidth && y-i >= 0 && y-i < numHeight) {
