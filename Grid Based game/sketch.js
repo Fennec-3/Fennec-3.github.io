@@ -11,8 +11,6 @@ let array, neighborArray, flagArray;
 let sqWidth = 50;
 let numHeight, numWidth;
 let bombCount, resetTimer, isDead;
-let sqX = floor(mouseX/sqWidth);
-let sqY = floor(mouseY/sqWidth);
 
 function setup() { //creates array, and sets all variables (setup is called when game resets)
   createCanvas(windowWidth, windowHeight);
@@ -36,14 +34,20 @@ function draw() {
   background(255);
   displayArray();
 
-  if (isDead === true) { //once bomb has been activated this code lets players know they have lost
+  if (isDead) { //once bomb has been activated this code lets players know they have lost
     fill("black");
     textAlign(CENTER, CENTER);
     textSize(100);
-    text("You Died", width/2, height/2);
-    if (millis() > resetTimer + 5000) { //resets after 5 seconds
-      setup();
-    }
+    text("You Died!", width/2, height/2);
+    reset();
+  }
+
+  if (hasWon()) {
+    fill("yellow");
+    textAlign(CENTER, CENTER);
+    textSize(100);
+    text("You Won!", width/2, height/2);
+    reset();
   }
 }
 
@@ -91,20 +95,28 @@ function displayArray() {
       }
       rect(x*sqWidth, y*sqWidth, sqWidth, sqWidth);
       if (array[y][x] === 0 && neighborArray[y][x] !== 0) { //displays grid and nearby bombs of mined tiles
-        displayText(y, x);
+        displayCellText(y, x);
+      }
+      if (array[y][x] !== 0 && flagArray[y][x] === "flag") {
+        fill("blue");
+        circle(x*sqWidth+sqWidth/2, y*sqWidth+sqWidth/2, sqWidth);
       }
     }
   }
 }
 
 function mousePressed() {
-  if (array[sqY][sqX] !== 9 && array[sqY][sqX] !== 10) { //mines cell
+  let sqX = floor(mouseX/sqWidth);
+  let sqY = floor(mouseY/sqWidth);
+
+  if (array[sqY][sqX] !== 9 && array[sqY][sqX] !== 10 && flagArray[sqY][sqX] !== "flag") { //mines cell if there is no flag on it
     array[sqY][sqX] = 0;
-    
     array = floodFill(array, sqX, sqY); //flood fill
+    resetTimer = millis();
   }
-  else if (array[sqY][sqX] === 9) {
-    array[sqY][sqX] = 10; //activates bomb
+
+  else if (array[sqY][sqX] === 9 && flagArray[sqY][sqX] !== "flag") { //activates bomb
+    array[sqY][sqX] = 10; 
 
     for (let i=0; i<array.length; i++) { //nested for loop will reveal all bomb locations when bomb is activated
       for (let j=0; j<array[i].length; j++) {
@@ -118,15 +130,35 @@ function mousePressed() {
   }
 }
 
-function keyPressed() {
-  if (flagArray[sqY][sqX] !== flag) {
-    flagArray[sqY][sqX] = flag;
+function keyPressed() { //places a flag on a cell
+  let sqX = floor(mouseX/sqWidth);
+  let sqY = floor(mouseY/sqWidth);
+
+  if (flagArray[sqY][sqX] !== "flag") {
+    flagArray[sqY][sqX] = "flag";
   } else {
-    flagArray[sqY][sqX] = blank;
+    flagArray[sqY][sqX] = "blank";
   }
 }
 
-function displayText(y, x) { //displays nearby bombs
+function hasWon() {
+  for (let y=0; y<array.length; y++) {
+    for (let x=0; x<array[y].length; x++) {
+      if (array[y][x] !== 9 && array[y][x] !== 0) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function reset() {
+  if (millis() > resetTimer + 3000) {
+    setup();
+  }
+}
+
+function displayCellText(y, x) { //displays nearby bombs
   fill("black");
   textSize(sqWidth*0.5);
   textAlign(CENTER, CENTER);
