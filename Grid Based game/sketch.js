@@ -3,16 +3,16 @@
 // 2021-11-06
 //
 // Extra for Experts:
-// - Attempted flood fill, not completed fully
+// - Attempted flood fill (not perfected)
 
-// To-Do: make it so the number of bombs = 10% of the squares on the grid // Done?
+// flag/win condition(1), flood fill(2)
 
-// flag/win condition(1), flood fill(2), first click safety (3)(maybe)
-
-let array, neighborArray;
+let array, neighborArray, flagArray;
 let sqWidth = 50;
 let numHeight, numWidth;
 let bombCount, resetTimer, isDead;
+let sqX = floor(mouseX/sqWidth);
+let sqY = floor(mouseY/sqWidth);
 
 function setup() { //creates array, and sets all variables (setup is called when game resets)
   createCanvas(windowWidth, windowHeight);
@@ -55,16 +55,19 @@ function createGrid(numHeight, numWidth) {
       board[y].push(floor(random(1, 10))); //randomizes tiles. dormant bombs = 9, activated bombs = 10, everything else is plain
     }
   }
-  neighborArray = createNewGrid(board); //stores nearbombs count in the replica array
+
+  neighborArray = createReplicaGrid(board); //stores nearbombs count in the replica array
   for (let i=0; i<neighborArray.length; i++) {
     for (let j=0; j<neighborArray[i].length; j++) {
       neighborArray[i][j] = checkBombs(board, i, j);
     }
   }
+
+  flagArray = createReplicaGrid(board);
   return board;
 }
 
-function createNewGrid(array) { //creates replica of array
+function createReplicaGrid(array) { //creates replica of array
   let array2 = [];
 
   for (let y=0; y<numHeight; y++) {
@@ -95,10 +98,7 @@ function displayArray() {
 }
 
 function mousePressed() {
-  let sqX = floor(mouseX/sqWidth);
-  let sqY = floor(mouseY/sqWidth);
-
-  if (array[sqY][sqX] !== 9 && array[sqY][sqX] !== 10) { //mines spot if there are no mines
+  if (array[sqY][sqX] !== 9 && array[sqY][sqX] !== 10) { //mines cell
     array[sqY][sqX] = 0;
     
     array = floodFill(array, sqX, sqY); //flood fill
@@ -118,6 +118,14 @@ function mousePressed() {
   }
 }
 
+function keyPressed() {
+  if (flagArray[sqY][sqX] !== flag) {
+    flagArray[sqY][sqX] = flag;
+  } else {
+    flagArray[sqY][sqX] = blank;
+  }
+}
+
 function displayText(y, x) { //displays nearby bombs
   fill("black");
   textSize(sqWidth*0.5);
@@ -125,7 +133,7 @@ function displayText(y, x) { //displays nearby bombs
   text(neighborArray[y][x], x*sqWidth + sqWidth/2, y*sqWidth + sqWidth/2);    
 }
 
-function checkBombs(board, y, x) {
+function checkBombs(board, y, x) { //checks how many bombs surround a certain cell
   let nearBombs = 0;
 
     for (let i=-1; i<=1; i++) {
@@ -140,14 +148,14 @@ function checkBombs(board, y, x) {
   return nearBombs;
 }
 
-function floodFill(floodArray, x, y) {
+function floodFill(floodArray, x, y) { //clears cells around cells that don't have nearby bombs
   if (neighborArray[y][x] === 0) {
     for (let i=-1; i<=1; i++) {
       for (let j=-1; j<=1; j++) {
         if (x-j >= 0 && x-j < numWidth && y-i >= 0 && y-i < numHeight) {
           if (floodArray[y-i][x-j] !== 9 || floodArray[y-i][x-j] !== 10) {
             floodArray[y-i][x-j] = 0;
-            for (let z=-6; z<6; z++) {
+            for (let z=-3; z<3; z++) {
               if (x-j-z >= 0 && x-j-z < numWidth && y-i-z >= 0 && y-i-z < numHeight) {
                 floodArray = flowFill(floodArray, x-j-z, y-i-z);
               }
@@ -160,8 +168,8 @@ function floodFill(floodArray, x, y) {
   return floodArray;
 }
 
-function flowFill(flowArray, x, y) {
-  if (neighborArray[y][x] === 0) {
+function flowFill(flowArray, x, y) { //does the same as floodFill, but I can call this
+  if (neighborArray[y][x] === 0) { //within floodFill without javaScript screaming in my ear
     for (let i=-1; i<=1; i++) {
       for (let j=-1; j<=1; j++) {
         if (x-j >= 0 && x-j < numWidth && y-i >= 0 && y-i < numHeight) {
