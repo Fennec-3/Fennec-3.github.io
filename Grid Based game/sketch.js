@@ -3,14 +3,12 @@
 // 2021-11-06
 //
 // Extra for Experts:
-// - Attempted flood fill (not perfected)
-
-// flag/win condition(1), flood fill(2)
+// - Attempted flood fill (not perfected. You might need to tap blank white spaces to continue the flood)
 
 let array, neighborArray, flagArray;
 let sqWidth = 50;
 let numHeight, numWidth;
-let bombCount, resetTimer, isDead;
+let resetTimer, isDead;
 
 function setup() { //creates array, and sets all variables (setup is called when game resets)
   createCanvas(windowWidth, windowHeight);
@@ -18,23 +16,13 @@ function setup() { //creates array, and sets all variables (setup is called when
   numWidth =  floor(width/sqWidth);
   numHeight = floor(height/sqWidth);
   array = createGrid(numHeight, numWidth); 
-
-  bombCount = 0; //counts how many bombs are in the array and displays in console
-  for (let i=0; i<array.length; i++) {
-    for (let j=0; j<array[i].length; j++) {
-      if (array[i][j] === 2) {
-        bombCount++;
-      }
-    }
-  }
-  console.log(bombCount);
 }
 
 function draw() {
   background(255);
   displayArray();
 
-  if (isDead) { //once bomb has been activated this code lets players know they have lost
+  if (isDead) { //lets players know if they have lost
     fill("black");
     textAlign(CENTER, CENTER);
     textSize(100);
@@ -42,7 +30,7 @@ function draw() {
     reset();
   }
 
-  if (hasWon()) {
+  if (hasWon()) { //lets player know if they've won
     fill("yellow");
     textAlign(CENTER, CENTER);
     textSize(100);
@@ -51,9 +39,9 @@ function draw() {
   }
 }
 
-function createGrid(numHeight, numWidth) {
+function createGrid(numHeight, numWidth) { //creates three arrays
   let board = [];
-  for (let y=0; y<numHeight; y++) { //creates array
+  for (let y=0; y<numHeight; y++) {
     board.push([]);
     for (let x=0; x<numWidth; x++) {
       board[y].push(floor(random(1, 10))); //randomizes tiles. dormant bombs = 9, activated bombs = 10, everything else is plain
@@ -67,7 +55,7 @@ function createGrid(numHeight, numWidth) {
     }
   }
 
-  flagArray = createReplicaGrid(board);
+  flagArray = createReplicaGrid(board); //stores flag locations
   return board;
 }
 
@@ -84,7 +72,7 @@ function createReplicaGrid(array) { //creates replica of array
 }
 
 function displayArray() {
-  for (let y=0; y<numHeight; y++) { //checks array colors mined spaces white, bombs red, and unmined spaces gray
+  for (let y=0; y<numHeight; y++) { //colors mined spaces white, bombs red, and unmined spaces green
     for (let x=0; x<numWidth; x++) {
       if (array[y][x] === 0) { 
        fill(255);
@@ -97,7 +85,7 @@ function displayArray() {
       if (array[y][x] === 0 && neighborArray[y][x] !== 0) { //displays grid and nearby bombs of mined tiles
         displayCellText(y, x);
       }
-      if (array[y][x] !== 0 && flagArray[y][x] === "flag") {
+      if (array[y][x] !== 0 && flagArray[y][x] === "flag") { //blue circles mark flaged cells
         fill("blue");
         circle(x*sqWidth+sqWidth/2, y*sqWidth+sqWidth/2, sqWidth);
       }
@@ -105,7 +93,7 @@ function displayArray() {
   }
 }
 
-function mousePressed() {
+function mousePressed() { //mines clicked cells
   let sqX = floor(mouseX/sqWidth);
   let sqY = floor(mouseY/sqWidth);
 
@@ -118,15 +106,15 @@ function mousePressed() {
   else if (array[sqY][sqX] === 9 && flagArray[sqY][sqX] !== "flag") { //activates bomb
     array[sqY][sqX] = 10; 
 
-    for (let i=0; i<array.length; i++) { //nested for loop will reveal all bomb locations when bomb is activated
+    for (let i=0; i<array.length; i++) { //reveals all bomb locations
       for (let j=0; j<array[i].length; j++) {
         if (array[i][j] === 9) {
           array[i][j] = 10;
         }
       }
     }
-    isDead = true;
-    resetTimer = millis(); //resets game after player dies
+    isDead = true; 
+    resetTimer = millis();
   }
 }
 
@@ -141,7 +129,7 @@ function keyPressed() { //places a flag on a cell
   }
 }
 
-function hasWon() {
+function hasWon() { //checks if all non-bomb cells have been mined (win condition)
   for (let y=0; y<array.length; y++) {
     for (let x=0; x<array[y].length; x++) {
       if (array[y][x] !== 9 && array[y][x] !== 0) {
@@ -152,20 +140,20 @@ function hasWon() {
   return true;
 }
 
-function reset() {
-  if (millis() > resetTimer + 3000) {
+function reset() { //resets games
+  if (millis() > resetTimer + 5000) {
     setup();
   }
 }
 
-function displayCellText(y, x) { //displays nearby bombs
+function displayCellText(y, x) { //displays number of nearby bombs
   fill("black");
   textSize(sqWidth*0.5);
   textAlign(CENTER, CENTER);
   text(neighborArray[y][x], x*sqWidth + sqWidth/2, y*sqWidth + sqWidth/2);    
 }
 
-function checkBombs(board, y, x) { //checks how many bombs surround a certain cell
+function checkBombs(board, y, x) { //checks how many bombs surround a cell
   let nearBombs = 0;
 
     for (let i=-1; i<=1; i++) {
