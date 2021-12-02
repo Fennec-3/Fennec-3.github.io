@@ -6,16 +6,16 @@
 // - Attempted flood fill (not perfected. You might need to tap blank white spaces to continue the flood)
 
 let array, neighborArray, flagArray;
-let sqWidth = 50;
-let numHeight, numWidth;
+let squareWidth = 50;
+let verticalCellsInGrid, numWidth;
 let resetTimer, isDead;
 
 function setup() { //creates array, and sets all variables (setup is called when game resets)
   createCanvas(windowWidth, windowHeight);
   isDead = false;
-  numWidth =  floor(width/sqWidth);
-  numHeight = floor(height/sqWidth);
-  array = createGrid(numHeight, numWidth); 
+  numWidth =  floor(width/squareWidth);
+  verticalCellsInGrid = floor(height/squareWidth);
+  array = createGrid(verticalCellsInGrid, numWidth); 
 }
 
 function draw() {
@@ -62,7 +62,7 @@ function createGrid(numHeight, numWidth) { //creates three arrays
 function createReplicaGrid(array) { //creates replica of array
   let array2 = [];
 
-  for (let y=0; y<numHeight; y++) {
+  for (let y=0; y<verticalCellsInGrid; y++) {
     array2.push([]);
     for (let x=0; x<numWidth; x++) {
       array2[y].push(array[y][x]);
@@ -72,7 +72,7 @@ function createReplicaGrid(array) { //creates replica of array
 }
 
 function displayArray() {
-  for (let y=0; y<numHeight; y++) { //colors mined spaces white, bombs red, and unmined spaces green
+  for (let y=0; y<verticalCellsInGrid; y++) { //colors mined spaces white, bombs red, and unmined spaces green
     for (let x=0; x<numWidth; x++) {
       if (array[y][x] === 0) { 
        fill(255);
@@ -81,30 +81,30 @@ function displayArray() {
       } else {
         fill("green");
       }
-      rect(x*sqWidth, y*sqWidth, sqWidth, sqWidth);
+      rect(x*squareWidth, y*squareWidth, squareWidth, squareWidth);
       if (array[y][x] === 0 && neighborArray[y][x] !== 0) { //displays grid and nearby bombs of mined tiles
         displayCellText(y, x);
       }
       if (array[y][x] !== 0 && flagArray[y][x] === "flag") { //blue circles mark flaged cells
         fill("blue");
-        circle(x*sqWidth+sqWidth/2, y*sqWidth+sqWidth/2, sqWidth);
+        circle(x*squareWidth+squareWidth/2, y*squareWidth+squareWidth/2, squareWidth);
       }
     }
   }
 }
 
 function mousePressed() { //mines clicked cells
-  let sqX = floor(mouseX/sqWidth);
-  let sqY = floor(mouseY/sqWidth);
+  let squareX = floor(mouseX/squareWidth);
+  let squareY = floor(mouseY/squareWidth);
 
-  if (array[sqY][sqX] !== 9 && array[sqY][sqX] !== 10 && flagArray[sqY][sqX] !== "flag") { //mines cell if there is no flag on it
-    array[sqY][sqX] = 0;
-    array = floodFill(array, sqX, sqY); //flood fill
+  if (array[squareY][squareX] !== 9 && array[squareY][squareX] !== 10 && flagArray[squareY][squareX] !== "flag") { //mines cell if there is no flag on it
+    array[squareY][squareX] = 0;
+    array = floodFill(array, squareX, squareY); //flood fill
     resetTimer = millis();
   }
 
-  else if (array[sqY][sqX] === 9 && flagArray[sqY][sqX] !== "flag") { //activates bomb
-    array[sqY][sqX] = 10; 
+  else if (array[squareY][squareX] === 9 && flagArray[squareY][squareX] !== "flag") { //activates bomb
+    array[squareY][squareX] = 10; 
 
     for (let i=0; i<array.length; i++) { //reveals all bomb locations
       for (let j=0; j<array[i].length; j++) {
@@ -119,8 +119,8 @@ function mousePressed() { //mines clicked cells
 }
 
 function keyPressed() { //places a flag on a cell
-  let sqX = floor(mouseX/sqWidth);
-  let sqY = floor(mouseY/sqWidth);
+  let sqX = floor(mouseX/squareWidth);
+  let sqY = floor(mouseY/squareWidth);
 
   if (flagArray[sqY][sqX] !== "flag") {
     flagArray[sqY][sqX] = "flag";
@@ -148,9 +148,9 @@ function reset() { //resets games
 
 function displayCellText(y, x) { //displays number of nearby bombs
   fill("black");
-  textSize(sqWidth*0.5);
+  textSize(squareWidth*0.5);
   textAlign(CENTER, CENTER);
-  text(neighborArray[y][x], x*sqWidth + sqWidth/2, y*sqWidth + sqWidth/2);    
+  text(neighborArray[y][x], x*squareWidth + squareWidth/2, y*squareWidth + squareWidth/2);    
 }
 
 function checkBombs(board, y, x) { //checks how many bombs surround a cell
@@ -158,7 +158,7 @@ function checkBombs(board, y, x) { //checks how many bombs surround a cell
 
     for (let i=-1; i<=1; i++) {
       for (let j=-1; j<=1; j++) {
-        if (x-j >= 0 && x-j < numWidth && y-i >= 0 && y-i < numHeight) {
+        if (x-j >= 0 && x-j < numWidth && y-i >= 0 && y-i < verticalCellsInGrid) {
           if (board[y-i][x-j] === 9 || board[y-i][x-j] === 10) {
             nearBombs++;
           }
@@ -172,11 +172,11 @@ function floodFill(floodArray, x, y) { //clears cells around cells that don't ha
   if (neighborArray[y][x] === 0) {
     for (let i=-1; i<=1; i++) {
       for (let j=-1; j<=1; j++) {
-        if (x-j >= 0 && x-j < numWidth && y-i >= 0 && y-i < numHeight) {
+        if (x-j >= 0 && x-j < numWidth && y-i >= 0 && y-i < verticalCellsInGrid) {
           if (floodArray[y-i][x-j] !== 9 || floodArray[y-i][x-j] !== 10) {
             floodArray[y-i][x-j] = 0;
             for (let z=-3; z<3; z++) {
-              if (x-j-z >= 0 && x-j-z < numWidth && y-i-z >= 0 && y-i-z < numHeight) {
+              if (x-j-z >= 0 && x-j-z < numWidth && y-i-z >= 0 && y-i-z < verticalCellsInGrid) {
                 floodArray = flowFill(floodArray, x-j-z, y-i-z);
               }
             }
@@ -192,7 +192,7 @@ function flowFill(flowArray, x, y) { //does the same as floodFill, but I can cal
   if (neighborArray[y][x] === 0) { //within floodFill without javaScript screaming in my ear
     for (let i=-1; i<=1; i++) {
       for (let j=-1; j<=1; j++) {
-        if (x-j >= 0 && x-j < numWidth && y-i >= 0 && y-i < numHeight) {
+        if (x-j >= 0 && x-j < numWidth && y-i >= 0 && y-i < verticalCellsInGrid) {
           if (flowArray[y-i][x-j] !== 9 || flowArray[y-i][x-j] !== 10) {
             flowArray[y-i][x-j] = 0;
           }
