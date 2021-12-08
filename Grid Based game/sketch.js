@@ -79,7 +79,7 @@ function displayArray() {
       } else if (array[y][x] === 10) { 
         fill("red");
       } else {
-        fill("green");
+        fill(117, 214, 13);
       }
       rect(x*squareWidth, y*squareWidth, squareWidth, squareWidth);
       if (array[y][x] === 0 && neighborArray[y][x] !== 0) { //displays grid and nearby bombs of mined tiles
