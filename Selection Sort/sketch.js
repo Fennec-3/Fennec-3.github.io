@@ -2,27 +2,28 @@
 
 let someList = [5, 15, 3, 8, 9, 1, 20, 7];
 
-// function selectionSort(newList, oldList, w) {
-//   if (newList === oldList) {
-//     return newList;
-//   } else {
-//     oldList = newList;
-//   }
+function selectionSort(newList, oldList, w) {
+  if (newList === oldList) {
+    return newList;
+  } else {
+    oldList = newList;
+  }
 
-//   let highNum = 0;
-//   let swapNum = newList.length-1-w;
-//   for (let i=0; i<newList.length-1; i++) {
-//     if (newList[i] > newList[highNum]) {
-//       highNum = i;
-//     } 
-//     if (i === swapNum) {
-//       let monke = newList[swapNum];
-//       newList[swapNum] = newList[highNum];
-//       newList[highNum] = monke;
-//       selectionSort(newList, oldList, w++);
-//     }
-//   }
-// }
+  let highNum = 0;
+  let swapNum = newList.length-1-w;
+  for (let i=0; i<newList.length-1; i++) {
+    if (newList[i] > newList[highNum]) {
+      highNum = i;
+    } 
+    if (i === swapNum) {
+      let monke = newList[swapNum];
+      newList[swapNum] = newList[highNum];
+      newList[highNum] = monke;
+      selectionSort(newList, oldList, w++);
+    }
+  }
+  return newList;
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
